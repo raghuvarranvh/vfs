@@ -6,15 +6,26 @@ Created on Sun Apr 24 14:18:40 2022
 """
 
 from selenium import webdriver
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 import requests
 from selenium.webdriver.support.ui import Select
-#%%
-driver = webdriver.Chrome(executable_path ='C:/Users/rgv1cob/Downloads/chromedriver_1.exe')
-driver.get("https://visa.vfsglobal.com/ind/en/deu/login")
-#%%
+from selenium.webdriver.chrome.options import Options
+import time
 
 #%%
+
+chrome_options = Options()
+chrome_options.add_argument("auto-open-devtools-for-tabs")
+driver = webdriver.Chrome(executable_path ='C:/Users/rgv1cob/Downloads/chromedriver_1.exe',options=chrome_options)
+driver.implicitly_wait(120)
+driver.get("https://visa.vfsglobal.com/ind/en/deu/login")
+
+
+time.sleep(10)
+#%% 
+print("web page loaded; entering user credentials")
+
+
 username = driver.find_element_by_id("mat-input-0")
 username.clear()
 username.send_keys("raghuvarranvh@gmail.com")
@@ -22,36 +33,58 @@ username.send_keys("raghuvarranvh@gmail.com")
 passwd = driver.find_element_by_id("mat-input-1")
 passwd.clear()
 passwd.send_keys("Raghu#27")
+#%%
+time.sleep(10)
 #%% sign in
 
 driver.find_element_by_class_name("mat-button-wrapper").click()
 #%%
 
+time.sleep(10)
+
 #%% start new booking
 #driver.find_element_by_css_selector("body > app-root > div > app-dashboard > section > div > div.row.mb-10.mb-md-25 > div.col-12.col-sm-auto.d-lg-none > button").click()
 #driver.find_element_by_xpath("/html/body/app-root/div/app-dashboard/section/div/div[1]/div[2]/button").click()
-driver.find_element_by_class_name("mat-button-wrapper").click()
-                             
+driver.find_element_by_class_name("mat-button-base").click()
+#%%
+time.sleep(10)
+print("start new booking successfully")
                                     
 #%% click on ecenter
-driver.find_element_by_class_name("mat-select-trigger ng-tns-c84-4").click()
+driver.find_element_by_id("mat-select-0").click()
+time.sleep(10)
+#%% Find the element id of chennai since it is changing dynamic
+center_id = driver.execute_script("return document.getElementById('mat-select-0-panel').children[4].getAttribute('id')")
 #%%
+# select chennnai center
+driver.find_element_by_id(center_id).click()
+#%%
+print("center chosen")
+time.sleep(10)
 
-center = driver.find_element_by_id("mat-select-value-1")
-ret_test= driver.execute_script("arguments[0].innerText = 'Chennai - Visa Application Centre'", center)
+#%% click on appointment category
+driver.find_element_by_id("mat-select-2").click()
+time.sleep(10)
+print("category chosen")
+#%% Find the element id of schengen visa since it is changing dynamic
+category_id = driver.execute_script("return document.getElementById('mat-select-2-panel').children[5].getAttribute('id')")
 #%%
-category = driver.find_element_by_id("mat-select-value-3")
-driver.execute_script("arguments[0].innerText = 'Schengen Visa (stay of max. 90 days or less)'", category)
+#select schengen visa
+driver.find_element_by_id(category_id).click()
 #%%
-subcategory = driver.find_element_by_id("mat-select-value-5")
-driver.execute_script("arguments[0].innerText = 'business'", subcategory)
+time.sleep(10)
+#%% click on sub category
+driver.find_element_by_id("mat-select-4").click()
+time.sleep(10)
 #%%
-with open("https://visa.vfsglobal.com/ind/en/deu/login") as fp:
-    soup = BeautifulSoup(fp, 'html.parser')
-    
-#%%    
-wbpage = "https://visa.vfsglobal.com/ind/en/deu/login"
-html_page= requests.get(wbpage).text
-soup = BeautifulSoup(html_page,features='html.parser')
+#%% Find the element id of business since it is changing dynamic
+subcategory_id = driver.execute_script("return document.getElementById('mat-select-4-panel').children[5].getAttribute('id')")
 
-/html/body/app-root/div/app-login/section/div/div/mat-card/form/button
+#%% select business
+driver.find_element_by_id(subcategory_id).click()
+#%%
+time.sleep(10)
+#%% Get response
+resp=driver.execute_script("return document.getElementsByClassName('alert')[0].innerHTML")
+print(resp)
+#%%
